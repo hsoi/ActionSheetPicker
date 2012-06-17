@@ -96,7 +96,7 @@
 
 - (void)notifyTarget:(id)target didSucceedWithAction:(SEL)successAction origin:(id)origin {    
     if (self.onActionSheetDone) {
-        _onActionSheetDone(self, self.selectedIndex, [self.data objectAtIndex:self.selectedIndex]);
+        _onActionSheetDone(self, self.selectedIndex, [self.data objectAtIndex:(NSUInteger)self.selectedIndex]);
         return;
     }
     else if (target && [target respondsToSelector:successAction]) {
@@ -118,22 +118,30 @@
 #pragma mark - UIPickerViewDelegate / DataSource
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+#pragma unused(pickerView)
+#pragma unused(component)
     self.selectedIndex = row;
 }
 
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
+#pragma unused(pickerView)
     return 1;
 }
 
 - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
-    return self.data.count;
+#pragma unused(pickerView)
+#pragma unused(component)
+    return (NSInteger)self.data.count;
 }
 
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-    return [self.data objectAtIndex:row];
+#pragma unused(pickerView)
+#pragma unused(component)
+    return [self.data objectAtIndex:(NSUInteger)row];
 }
 
 - (CGFloat)pickerView:(UIPickerView *)pickerView widthForComponent:(NSInteger)component {
+#pragma unused(component)
     return pickerView.frame.size.width - 30;
 }
 

@@ -120,6 +120,10 @@
 }
 
 - (void)notifyTarget:(id)target didSucceedWithAction:(SEL)successAction origin:(id)origin {    
+#pragma unused(target)
+#pragma unused(sucessAction)
+#pragma unused(origin)
+	
     NSAssert(NO, @"This is an abstract class, you must use a subclass of AbstractActionSheetPicker (like ActionSheetStringPicker)");
 }
 
@@ -143,11 +147,13 @@
 }
 
 - (IBAction)actionPickerDone:(id)sender {
+#pragma unused(sender)
     [self notifyTarget:self.target didSucceedWithAction:self.successAction origin:[self storedOrigin]];    
     [self dismissPicker];
 }
 
 - (IBAction)actionPickerCancel:(id)sender {
+#pragma unused(sender)
     [self notifyTarget:self.target didCancelWithAction:self.cancelAction origin:[self storedOrigin]];
     [self dismissPicker];
 }
@@ -183,9 +189,9 @@
 - (IBAction)customButtonPressed:(id)sender {
     UIBarButtonItem *button = (UIBarButtonItem*)sender;
     NSInteger index = button.tag;
-    NSAssert((index >= 0 && index < self.customButtons.count), @"Bad custom button tag: %d, custom button count: %d", index, self.customButtons.count);
+    NSAssert((index >= 0 && (NSUInteger)index < self.customButtons.count), @"Bad custom button tag: %d, custom button count: %d", index, self.customButtons.count);
     NSAssert([self.pickerView respondsToSelector:@selector(selectRow:inComponent:animated:)], @"customButtonPressed not overridden, cannot interact with subclassed pickerView");
-    NSDictionary *buttonDetails = [self.customButtons objectAtIndex:index];
+    NSDictionary *buttonDetails = [self.customButtons objectAtIndex:(NSUInteger)index];
     NSAssert(buttonDetails != NULL, @"Custom button dictionary is invalid");
     NSInteger buttonValue = [[buttonDetails objectForKey:@"buttonValue"] intValue];
     UIPickerView *picker = (UIPickerView *)self.pickerView;
@@ -302,6 +308,25 @@
     [_actionSheet addSubview:aView];
     [self presentActionSheet:_actionSheet];
     _actionSheet.bounds = CGRectMake(0, 0, self.viewSize.width, sheetHeight);
+    /*
+    // Hsoi 17-Jun-2012 - I am updating my sources to use the latest ActionSheetPicker. In my version the
+    // above "else (if !isViewPortrait)" logic didn't exist and I hacked things as below... this code blow
+    // replaced the line just above where the _actionSheet.bounds were set to the sheetHeight.
+    // However, it looks like in this latest code from the original author, he is attempting to do
+    // something about landscape mode so it's possible my hack doesn't need to exist. I am not in a
+    // position to actually try out the code just yet. I'll trust his fix for now, but I wanted to keep
+    // reference to my hack so I could come back to it later and investigate.
+    
+	// Hsoi 05-Feb-2012 - The original author set the height of the sheet to viewSize.height - 47. Not sure of
+	// the magic, but it seems a lot of this class is pushing precise pixels and that's just what you need
+	// because the UIPickerView really only works at a height of 216 pixels (OS-constraint). So when you
+	// turned to landscape mode tho, the sheet was so short, it was fugly and non-functional. So I poked
+	// around with it some and it seems 500 pixels is good enough to make it look alright. I'm not sure
+	// if this is the best solution, but it works. I emailed the author to let him know about this.
+	CGFloat sheetHeight = UIDeviceOrientationIsPortrait([UIDevice currentDevice].orientation) ? self.viewSize.height - 47 : 500;
+	_actionSheet.bounds = CGRectMake(0, 0, self.viewSize.width, sheetHeight);
+    
+    */
 }
 
 - (void)presentActionSheet:(UIActionSheet *)actionSheet {
