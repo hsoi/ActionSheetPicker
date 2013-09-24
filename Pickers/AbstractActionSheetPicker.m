@@ -32,7 +32,7 @@
 
 @property (nonatomic, strong) UIBarButtonItem *barButtonItem;
 @property (nonatomic, strong) UIView *containerView;
-@property (nonatomic, unsafe_unretained) id target;
+@property (nonatomic, weak) id target;
 @property (nonatomic, assign) SEL successAction;
 @property (nonatomic, assign) SEL cancelAction;
 @property (nonatomic, strong) UIActionSheet *actionSheet;
@@ -104,7 +104,6 @@
         [self.pickerView performSelector:@selector(setDataSource:) withObject:nil];
     
     self.target = nil;
-    
 }
 
 - (UIView *)configuredPickerView {
@@ -114,7 +113,7 @@
 
 - (void)notifyTarget:(id)target didSucceedWithAction:(SEL)successAction origin:(id)origin {    
 #pragma unused(target)
-#pragma unused(sucessAction)
+#pragma unused(successAction)
 #pragma unused(origin)
 	
     NSAssert(NO, @"This is an abstract class, you must use a subclass of AbstractActionSheetPicker (like ActionSheetStringPicker)");
@@ -231,9 +230,20 @@
 
 - (UIBarButtonItem *)createToolbarLabelWithTitle:(NSString *)aTitle {
     UILabel *toolBarItemlabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 180,30)];
-    [toolBarItemlabel setTextAlignment:UITextAlignmentCenter];    
-    [toolBarItemlabel setTextColor:[UIColor whiteColor]];    
-    [toolBarItemlabel setFont:[UIFont boldSystemFontOfSize:16]];    
+    [toolBarItemlabel setTextAlignment:NSTextAlignmentCenter];    
+    [toolBarItemlabel setTextColor:[UIColor whiteColor]];
+    
+    // Hsoi 2013-07-06 - originally set the font to +boldSystemFontOfSize:16. Changed in an attempt
+    // to be a little more dynamic.
+    NSDictionary* barAttributes = [[UINavigationBar appearance] titleTextAttributes];
+    UIFont*         barFont = [barAttributes objectForKey:UITextAttributeFont];
+    if (barFont == nil) {
+        barFont = [UIFont boldSystemFontOfSize:16.0];
+    }
+    else {
+        barFont = [barFont fontWithSize:16.0];
+    }
+    [toolBarItemlabel setFont:barFont];
     [toolBarItemlabel setBackgroundColor:[UIColor clearColor]];    
     toolBarItemlabel.text = aTitle;    
     UIBarButtonItem *buttonLabel = [[UIBarButtonItem alloc]initWithCustomView:toolBarItemlabel];

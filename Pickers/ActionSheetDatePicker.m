@@ -41,7 +41,7 @@
 + (id)showPickerWithTitle:(NSString *)title 
            datePickerMode:(UIDatePickerMode)datePickerMode selectedDate:(NSDate *)selectedDate                                                                             
                  target:(id)target action:(SEL)action origin:(id)origin {
-    ActionSheetDatePicker *picker = [[ActionSheetDatePicker alloc] initWithTitle:title datePickerMode:datePickerMode selectedDate:selectedDate target:target action:action origin:origin];
+    ActionSheetDatePicker *picker = [[[self class] alloc] initWithTitle:title datePickerMode:datePickerMode selectedDate:selectedDate target:target action:action origin:origin];
     [picker showActionSheetPicker];
     return picker;
 }
@@ -55,7 +55,6 @@
     }
     return self;
 }
-
 
 - (UIView *)configuredPickerView {
     CGRect datePickerFrame = CGRectMake(0, 40, self.viewSize.width, 216);
@@ -74,7 +73,7 @@
     if ([target respondsToSelector:action])
         objc_msgSend(target, action, self.selectedDate, origin);
     else
-        NSAssert(NO, @"Invalid target/action ( %s / %s ) combination used for ActionSheetPicker", object_getClassName(target), (char *)action);
+        NSAssert(NO, @"Invalid target/action ( %s / %s ) combination used for ActionSheetPicker", object_getClassName(target), sel_getName(action));
 }
 
 - (void)eventForDatePicker:(id)sender {
@@ -87,7 +86,7 @@
 - (void)customButtonPressed:(id)sender {
     UIBarButtonItem *button = (UIBarButtonItem*)sender;
     NSInteger index = button.tag;
-    NSAssert((index >= 0 && index < self.customButtons.count), @"Bad custom button tag: %d, custom button count: %d", index, self.customButtons.count);    
+    NSAssert((index >= 0 && (NSUInteger)index < self.customButtons.count), @"Bad custom button tag: %d, custom button count: %d", index, self.customButtons.count);
     NSAssert([self.pickerView respondsToSelector:@selector(setDate:animated:)], @"Bad pickerView for ActionSheetDatePicker, doesn't respond to setDate:animated:");
     NSDictionary *buttonDetails = [self.customButtons objectAtIndex:index];
     NSDate *itemValue = [buttonDetails objectForKey:@"buttonValue"];
