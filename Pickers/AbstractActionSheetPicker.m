@@ -236,7 +236,7 @@
     // Hsoi 2013-07-06 - originally set the font to +boldSystemFontOfSize:16. Changed in an attempt
     // to be a little more dynamic.
     NSDictionary* barAttributes = [[UINavigationBar appearance] titleTextAttributes];
-    UIFont*         barFont = [barAttributes objectForKey:UITextAttributeFont];
+    UIFont*         barFont = [barAttributes objectForKey:NSFontAttributeName];
     if (barFont == nil) {
         barFont = [UIFont boldSystemFontOfSize:16.0];
     }
@@ -344,7 +344,7 @@
 - (void)configureAndPresentPopoverForView:(UIView *)aView {
     UIViewController *viewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
     viewController.view = aView;
-    viewController.contentSizeForViewInPopover = viewController.view.frame.size;
+    viewController.preferredContentSize = viewController.view.frame.size;
     _popOverController = [[UIPopoverController alloc] initWithContentViewController:viewController];
     [self presentPopover:_popOverController];
 }
